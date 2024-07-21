@@ -9,3 +9,4 @@ models--data models create
 routes--path
 utils--same function use repeatedly then store in utils
 (all these folder create in src by mkdir folder_name )(all folder separately)
+npm i -D prettier (use for  remove conflict when team work tabwidth ,space check)(-D use for devlopment dependency)(.prettierrc)file create by your own 
