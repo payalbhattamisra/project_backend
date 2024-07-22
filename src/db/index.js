@@ -1,7 +1,7 @@
 //here only write database  connection of mongoose 
 //here differen is just store async ,store await
 import mongoose from 'mongoose'
-import {DB_NAME} from "../constants"
+import {DB_NAME} from "../constants.js"
 
 const connectDB=async()=>{
     try{
