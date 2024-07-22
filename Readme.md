@@ -16,3 +16,7 @@ npm i mongoose express dotenv
 
 //api calling process ,api comes from json(limit gives),url 
 npm i cookie-parser cors (cookie-parser -->middleware type && cors-->kisko data dena he like origin written here)
+
+//npm i mongoose-aggregate-paginate-v2(use as plug in)(videomodel)
+//npm i bcrypt jsonwebtoken(bcrypt -->used as passward hash (encrypted decrypted password convertion))
+(jsonwebtoken --->password inside token present 64 bit add extra like ,import jwt(usermodel))
