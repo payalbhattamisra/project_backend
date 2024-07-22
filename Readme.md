@@ -20,3 +20,7 @@ npm i cookie-parser cors (cookie-parser -->middleware type && cors-->kisko data 
 //npm i mongoose-aggregate-paginate-v2(use as plug in)(videomodel)
 //npm i bcrypt jsonwebtoken(bcrypt -->used as passward hash (encrypted decrypted password convertion))
 (jsonwebtoken --->password inside token present 64 bit add extra like ,import jwt(usermodel))
+
+//file upload
+express-fileupload,multer(data first store in localserver),cloudinary(then store in cloud server) (npm i cloudinary)(npm i multer)
+1.server.2.local.3.cloud after complete all setps remove from server
