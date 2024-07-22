@@ -13,3 +13,6 @@ npm i -D prettier (use for  remove conflict when team work tabwidth ,space check
 
 mongodb connection
 npm i mongoose express dotenv
+
+//api calling process ,api comes from json(limit gives),url 
+npm i cookie-parser cors (cookie-parser -->middleware type && cors-->kisko data dena he like origin written here)
