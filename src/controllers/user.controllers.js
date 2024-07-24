@@ -20,7 +20,7 @@ const registerUser=asyncHandler(async (req,res)=>{
     //return res
 
     const {fullname,email,username,password}=req.body
-    console.log("email ",email);
+    //console.log("email ",email);
     // if(fullname===""){
     //     throw new ApiError(400,"full name is required")
     // }
@@ -28,24 +28,31 @@ const registerUser=asyncHandler(async (req,res)=>{
         [fullname,email,username,password].some((field)=>
         field?.trim()==="")
     ) {
-        throw new ApiError(400,"full name is required")
+        throw new ApiError(400,"all fields are required")
     }
-    const existedUser=User.findOne({
+    const existedUser=await User.findOne({
         $or:[{username},{email}]
     })
     if(existedUser){
         throw new ApiError(409,"user with email or user already exist")
     }
-    const avatarLocalPath=req.files?.avatar[0]?.path;
-    const coverImageLocalPath=req.files?.coverImage[0]?.path;
+    //console.log(req.files);
+    const avatarLocalPath= req.files?.avatar[0]?.path;
+    //const coverImageLocalPath= req.files?.coverImage[0]?.path;
+    
+    //classical way to represent --->
+    let coverImageLocalPath;
+    if(req.files && Array.isArray(req.files.coverImage)&& req.files.coverImage.length >0 ){
+        coverImageLocalPath=req.files.coverImage[0].path
+    }
     if(!avatarLocalPath){
-        throw new ApiError(404,"avatar file is required");
+        throw new ApiError(400,"avatar file is required")
     }
     //await use wait upto send in cloudinary then next step do
-    const avatar=await uploadOnCloudinary(avatarLocalPath);
-    const coverImage=await uploadOnCloudinary(coverImageLocalPath);
+    const avatar=await uploadOnCloudinary(avatarLocalPath)
+    const coverImage=await uploadOnCloudinary(coverImageLocalPath)
     if(!avatar){
-        throw new ApiError(404,"avatar file is required");
+        throw new ApiError(400,"avatar file is required");
     }
     //avatar we already checked valid or not & in res only u send url,but we don't check coverImage so give ternary operator
     const user=await User.create({

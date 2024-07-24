@@ -14,11 +14,12 @@ import fs from "fs"
         try{
           if (!localFilePath) return null
           //upload the file on cloudinary
-          cloudinary.uploader.upload(localFilePath,{
+          const response=await cloudinary.uploader.upload(localFilePath,{
             resource_type:"auto"
           })
           //file has been uploaded successfully
-          console.log("file is uploaded on cloudinary",response.url);
+          //console.log("file is uploaded on cloudinary",response.url);
+          fs.unlinkSync(localFilePath)
           return response;
         }
         catch(error){
