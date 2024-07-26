@@ -218,14 +218,14 @@ const changeCurrentPassword=asyncHandler(async(req,res)=>{
 const getCurrentUser=asyncHandler(async(req,res)=>{
   return res
   .status(200)
-  .json(200,req.user,"current user fetched successfully")
+  .json(new ApiResponse(200,req.user,"current user fetched successfully"))
 })
 const updateAccountDetails=asyncHandler(async(req,res)=>{
   const {fullname,email}=req.body
   if(!fullname || !email){
     throw new ApiError(400 ,"all fields are required")
   }
-  const user=User.findByIdAndUpdate(
+  const user=await User.findByIdAndUpdate(
     req.user?._id,
     {
       $set:{
@@ -286,6 +286,121 @@ const updateUserCoverImage=asyncHandler(async(req,res)=>{
   .status(200)
   .json(new ApiResponse(200,user,"CoverImage updated successfully"))
 })
+const getUserChannelProfile=asyncHandler(async(req,res)=>{
+    const {username}=req.params
+    if(!username?.trim()){
+      throw new ApiError(400,"username is missing")
+    }
+    const channel=await User.aggregate([
+      {
+        $match:{
+          username:username?.toLowerCase()
+        }
+      },//it is also a pipeline
+      {
+        $lookup:{
+          from:"subscriptions",
+          //subscription.model.js-->Subscription-->mongo convert plural ,lowercase -->subscriptions
+          localField:"_id",
+          foreignField:"channel",
+          as:"subscribers"
+        }//2nd pipeline,subsribers you find here
+      },
+      {
+        $lookup:{
+          from:"subscriptions",
+          //subscription.model.js-->Subscription-->mongo convert plural ,lowercase -->subscriptions
+          localField:"_id",
+          foreignField:"subscriber",
+          as:"subscribedTo"
+        }//3rd pipeline,subsribed you find here
+      },//additional field add count
+      {
+        $addFields:{
+          subscribersCount:{ 
+            $size:"$subscribers"
+            //$-->field
+          },
+          channelSubscribedToCount:{
+            $size:"subscribedTo"
+          },
+          isSubscribed:{
+            $cond:{//in present or not
+              if:{$in:[req.user?._id,"$subscribers.subscriber"]},
+              then:true,
+              else:false
+            }
+          }
+        }
+      },//4th pipeline
+      {//5th --selective 1
+        $project:{
+          fullname:1,
+          username:1,
+          subscribersCount:1,
+          channelSubscribedToCount:1,
+          isSubscribed:1,
+          avatar:1,
+          coverImage:1,
+          email:1
+        }
+      }
+    ])
+    if(!channel?.length){
+      throw new ApiError(404,"channel doesn't exist")
+    }
+    return res
+    .status(200)
+    .json(new ApiResponse(200,channel[0],"User Channel Fetched successfuly"))
+})
+const getWatchHistory=asyncHandler(async(req,res)=>{
+//nested pipeline aggregation -->id store in mongodb will be nested from where string add that covert -->
+const user=await User.aggregate([
+  {
+    $match:{
+     // _id:req.user._id not happen bcz here mongosse create not aggregate pipeline
+     _id:new mongoose.Types.ObjectId(req.user._id)
+    }
+  },
+  {
+    $lookup:{
+      from:"videos",
+      localField:"watchHistory",
+      foreignField:"_id",
+      as:"watchHistory",
+      pipeline:[//nested
+        {
+          $lookup:{
+            from:"users",
+            localField:"owner",
+            foreignField:"_id",
+            as:"owner",
+            pipeline:[
+              {
+                $project:{
+                  fullname:1,
+                  username:1,
+                  avatar:1
+                }
+              }
+            ]
+          }//user.model.js -->User-->users
+        },
+        {
+          $addFields:{
+            owner:{
+              $first:"$owner"
+            }
+          }
+        }
+      ]
+    }//video.model.js -->Video -->videos
+  }
+])
+return res
+      .status(200)
+      .json(new ApiResponse(200,user[0].watchHistory,"watch history fetched successfuly"))
+})
 export {
     registerUser,
     loginUser,
@@ -295,5 +410,7 @@ export {
     getCurrentUser,
     updateAccountDetails,
     updateUserAvatar,
-    updateUserCoverImage
+    updateUserCoverImage,
+    getUserChannelProfile,
+    getWatchHistory
 }

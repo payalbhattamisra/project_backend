@@ -28,3 +28,6 @@ express-fileupload,multer(data first store in localserver),cloudinary(then store
 //1.see postman error status -like 500,200 etc
 2.then go to user.controllers.js where 500,300 etc you write that method there is check then if not 
 3.then go to where method comes from which file there check
+
+//aggregation pipeline
+after using filter it totally changed
