@@ -24,3 +24,7 @@ npm i cookie-parser cors (cookie-parser -->middleware type && cors-->kisko data 
 //file upload
 express-fileupload,multer(data first store in localserver),cloudinary(then store in cloud server) (npm i cloudinary)(npm i multer)
 1.server.2.local.3.cloud after complete all setps remove from server
+
+//1.see postman error status -like 500,200 etc
+2.then go to user.controllers.js where 500,300 etc you write that method there is check then if not 
+3.then go to where method comes from which file there check
